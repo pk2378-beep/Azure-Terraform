@@ -5,12 +5,6 @@ terraform {
         version = "~> 4.8.0"
     }
   }
-  backend "azurerm" {
-    resource_group_name  = "tfstate-day04"  # Can be passed via `-backend-config=`"resource_group_name=<resource group name>"` in the `init` command.
-    storage_account_name = "day0417691"                      # Can be passed via `-backend-config=`"storage_account_name=<storage account name>"` in the `init` command.
-    container_name       = "tfstate"                       # Can be passed via `-backend-config=`"container_name=<container name>"` in the `init` command.
-    key                  = "dev.terraform.tfstate"        # Can be passed via `-backend-config=`"key=<blob key name>"` in the `init` command.
-  }
   required_version = ">=1.9.0"
 }
 
@@ -20,38 +14,56 @@ provider "azurerm" {
     }
   
 }
+
 variable "environment" {
-    type = string
-    description = "the env type"
-    default = "staging"
-  
+  description = "The environment for the resources"
+  type        = string
+  default     = "development"
 }
 
 locals {
-  common_tags = {
-    environment = "dev"
-    lob = "banking"
-    stage = "alpha"
+  common_tags= { 
+  environment="dev"
+  lob="banking"
+  stage="alpha"
   }
 }
+
+variable "location" {
+  description = "The location for the resources"
+  type        = string
+  default     = "West Europe"
+}
+
+variable "resource_group_name" {
+  description = "The name of the resource group"
+  type        = string
+  default     = "rg-test"
+}
+
 resource "azurerm_resource_group" "example" {
-  name     = "example-resources"
-  location = "West Europe"
+  name     = var.resource_group_name
+  location = var.location
 }
 
 resource "azurerm_storage_account" "example" {
  
-  name                     = "techtutorial101"
+  name                     ="pavan10001234"
   resource_group_name      = azurerm_resource_group.example.name
   location                 = azurerm_resource_group.example.location # implicit dependency
   account_tier             = "Standard"
-  account_replication_type = "LRS"
+  account_replication_type = "ZRS"
 
   tags = {
     environment = local.common_tags.environment
+  
   }
 }
 
 output "storage_account_name" {
   value = azurerm_storage_account.example.name
+}
+
+output "resource_group_name" {
+  value = azurerm_resource_group.example.name
 }

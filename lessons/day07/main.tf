@@ -1,11 +1,11 @@
 resource "azurerm_resource_group" "example" {
-  name     = "${var.environment}-resources"
-  location = var.allowed_locations[2]
+  name     = "${var.environment}-Rg"
+  location = var.allowed_locations[0]
 }
 
 resource "azurerm_virtual_network" "main" {
   name                = "${var.environment}-network"
-  address_space       = [element(var.network_config,0)]
+  address_space       = ["10.0.0.0/16"]
   location            = azurerm_resource_group.example.location
   resource_group_name = azurerm_resource_group.example.name
 }
@@ -14,7 +14,7 @@ resource "azurerm_subnet" "internal" {
   name                 = "internal"
   resource_group_name  = azurerm_resource_group.example.name
   virtual_network_name = azurerm_virtual_network.main.name
-  address_prefixes     = ["${element(var.network_config, 1)}/${element(var.network_config, 2)}"]
+  address_prefixes     = ["10.0.2.0/24"]
 }
 
 resource "azurerm_network_interface" "main" {
@@ -34,10 +34,10 @@ resource "azurerm_virtual_machine" "main" {
   location              = azurerm_resource_group.example.location
   resource_group_name   = azurerm_resource_group.example.name
   network_interface_ids = [azurerm_network_interface.main.id]
-  vm_size               = var.allowed_vm_sizes[0]
+  vm_size               = "Standard_DS1_v2"
 
   # Uncomment this line to delete the OS disk automatically when deleting the VM
-  delete_os_disk_on_termination = var.is_delete
+  delete_os_disk_on_termination = var.vm_delete_os_disk_on_termination
 
   # Uncomment this line to delete the data disks automatically when deleting the VM
   # delete_data_disks_on_termination = true
@@ -45,15 +45,15 @@ resource "azurerm_virtual_machine" "main" {
   storage_image_reference {
     publisher = "Canonical"
     offer     = "0001-com-ubuntu-server-jammy"
-    sku       = var.vm_config.sku
-    version   = var.vm_config.version
+    sku       = "22_04-lts"
+    version   = "latest"
   }
   storage_os_disk {
     name              = "myosdisk1"
     caching           = "ReadWrite"
     create_option     = "FromImage"
+    disk_size_gb      = var.storage_disk_size
     managed_disk_type = "Standard_LRS"
-    disk_size_gb = var.storage_disk
   }
   os_profile {
     computer_name  = "hostname"
@@ -64,8 +64,7 @@ resource "azurerm_virtual_machine" "main" {
     disable_password_authentication = false
   }
   tags = {
-    environment = var.resource_tags["environment"]
-    managed_by = var.resource_tags["managed_by"]
-    department = var.resource_tags["department"]
+    environment = "var.environment"
   }
 }
+
