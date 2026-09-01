@@ -7,7 +7,7 @@ variable "environment" {
 variable "location" {
   description = "The location for the resources"
   type        = string
-  default     = "West Europe"
+  default     = "southindia"
 }
 
 variable "resource_group_name" {
