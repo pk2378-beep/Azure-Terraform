@@ -50,3 +50,9 @@ variable "mapping_tags" {
     deployment  = "test-deployment"
   }
 }
+
+variable "allowed_vm_sizes" {
+  description = "The list of allowed VM sizes"
+  type = list(string)
+  default = ["Standard_B2as_v2", "Standard_DS1_v2", "Standard_DS2_v2", "Standard_DS3_v2", "Standard_B2s", "Standard_B2ms", "Standard_B4ms"]
+}
