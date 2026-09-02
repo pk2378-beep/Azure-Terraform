@@ -5,8 +5,9 @@ variable "environment" {
 }
 
 variable "subscription_id" {
-  description = "The Azure subscription ID used by the provider"
+  description = "The subscription ID for the Azure resources"
   type        = string
+  default     = "ae64e688-e040-41f7-901f-1dcafa72597e"
 }
 
 variable "location" {
