@@ -34,7 +34,7 @@ resource "azurerm_virtual_machine" "main" {
   location              = azurerm_resource_group.example.location
   resource_group_name   = azurerm_resource_group.example.name
   network_interface_ids = [azurerm_network_interface.main.id]
-  vm_size               = "Standard_DS1_v2"
+  vm_size               = "Standard_B2as_v2"
 
   # Uncomment this line to delete the OS disk automatically when deleting the VM
   delete_os_disk_on_termination = var.vm_delete_os_disk_on_termination
@@ -64,7 +64,10 @@ resource "azurerm_virtual_machine" "main" {
     disable_password_authentication = false
   }
   tags = {
-    environment = "var.environment"
+    environment = var.mapping_tags["environment"]
+    owner       = var.mapping_tags["owner"]
+    managed_by  = var.mapping_tags["managed_by"]
+    deployment  = var.mapping_tags["deployment"]
   }
 }
 

@@ -4,6 +4,11 @@ variable "environment" {
   default     = "dev"
 }
 
+variable "subscription_id" {
+  description = "The Azure subscription ID used by the provider"
+  type        = string
+}
+
 variable "location" {
   description = "The location for the resources"
   type        = string
@@ -31,5 +36,16 @@ variable "vm_delete_os_disk_on_termination" {
 variable "allowed_locations" {
   description = "The list of allowed locations for the resources"
   type        = list(string)
-  default     = ["West Europe", "south india", "East US", "West US"]
+  default     = ["WestEurope", "southindia", "EastUS", "WestUS"]
+}
+
+variable "mapping_tags" {
+  description = "A map of tags to assign to the resources"
+  type        = map(string)
+  default     = {
+    environment = "dev"
+    owner       = "testuser"
+    managed_by  = "terraform"
+    deployment  = "test-deployment"
+  }
 }
