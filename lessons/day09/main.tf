@@ -1,6 +1,17 @@
 resource "azurerm_resource_group" "example" {
+  lifecycle {
+    create_before_destroy = true
+    # ignore_changes        = [tags]
+     precondition {
+      condition = contains(var.allowed_locations, var.location)
+      error_message = "Please enter valid location"
+    }
+  }
   name     = "${var.environment}-Rg"
-  location = var.allowed_locations[1]
+  location = var.location
+  tags = {
+    environment = var.environment
+}
 }
 
 resource "azurerm_virtual_network" "main" {
@@ -30,11 +41,16 @@ resource "azurerm_network_interface" "main" {
 }
 
 resource "azurerm_virtual_machine" "main" {
+  lifecycle {
+    ignore_changes = [tags]
+   
+  }
+
   name                  = "${var.environment}-vm"
   location              = azurerm_resource_group.example.location
   resource_group_name   = azurerm_resource_group.example.name
   network_interface_ids = [azurerm_network_interface.main.id]
-  vm_size               = var.allowed_vm_sizes[1]
+  vm_size               = var.allowed_vm_sizes[0]
 
   # Uncomment this line to delete the OS disk automatically when deleting the VM
   delete_os_disk_on_termination = var.vm_delete_os_disk_on_termination

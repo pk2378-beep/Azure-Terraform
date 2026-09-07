@@ -1,7 +1,7 @@
 variable "environment" {
   description = "The environment for the resources"
   type        = string
-  default     = "dev"
+  default     = "production"
 }
 
 variable "subscription_id" {
